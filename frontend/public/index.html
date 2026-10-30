@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BJJ Performance</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#EEF1F6;--sf:#fff;--sf2:#E3E8F1;--tx:#111A2B;--mu:#5B6880;--ac:#2D5BFF;--ac2:#fff;--ok:#12805C;--bad:#B3261E;--ln:#D3DAE6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1420;--sf:#16202F;--sf2:#1F2B3E;--tx:#E9EEF7;--mu:#8D9BB3;--ac:#6F8DFF;--ac2:#0D1420;--ok:#4CC38A;--bad:#FF8A80;--ln:#27344A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1420;--sf:#16202F;--sf2:#1F2B3E;--tx:#E9EEF7;--mu:#8D9BB3;--ac:#6F8DFF;--ac2:#0D1420;--ok:#4CC38A;--bad:#FF8A80;--ln:#27344A;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:500 15px/1.4 Barlow,system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:12px 14px 40px}
+h1,h2{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:700;margin:0}h1{font-size:30px}h2{font-size:21px;margin:20px 0 6px}
+small,.mu{color:var(--mu);font-size:13px}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;overflow-x:auto;padding:8px 0;border-bottom:1px solid var(--ln)}
+.tabs button{white-space:nowrap;background:none;color:var(--mu)}.tabs button.on{background:var(--ac);color:var(--ac2)}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:8px 13px;background:var(--sf2);font-weight:600}
+input,select{background:var(--sf2);border:1px solid transparent;border-radius:8px;padding:6px;width:100%;min-width:56px}
+input[type=checkbox]{width:22px;height:22px;min-width:0}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:12px;margin:10px 0}
+.sc{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:420px}
+th{font-size:12px;color:var(--mu);font-weight:600;text-align:center;padding:4px}th:first-child,td:first-child{text-align:left}
+td{padding:4px;text-align:center;border-top:1px solid var(--ln)}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.k b{display:block;font:700 28px "Barlow Condensed";line-height:1.1}
+.up{color:var(--ok);font-weight:600}.dn{color:var(--bad);font-weight:600}
+.bar{height:6px;background:var(--sf2);border-radius:3px;margin-top:4px}.bar i{display:block;height:100%;background:var(--ac);border-radius:3px}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.nm{display:flex;align-items:center;gap:8px;cursor:pointer;text-align:left}.nm img{border-radius:6px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;display:flex;align-items:flex-end;justify-content:center}.modal>div{background:var(--sf);width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}.seg button.on{background:var(--ac);color:var(--ac2)}.av{border-radius:50%;object-fit:cover;flex:none;background:var(--sf2);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:var(--mu)}.fl:focus-within{outline:2px solid var(--ac);outline-offset:2px}</style></head><body><main>
+<div class=row><h1>BJJ Performance</h1><button id=lo hidden data-logout=1>Cerrar sesión</button></div><small id=who></small> · <small id=sync></small>
+<div class=tabs id=tabs></div><div id=v></div></main>
+<script>
+let CAT=[];
+const MAP={"Press de banca": "0025", "Press inclinado con mancuernas": "0314", "Press militar con mancuernas": "0405", "Remo alto con barra": "0120", "Tríceps en polea": "0241", "Remo inclinado con barra": "0027", "Remo con mancuerna": "0292", "Aperturas inversas con mancuernas": "2292", "Sentadilla trasera": "0043", "Peso muerto": "0032", "Rumano con mancuerna": "1459", "Dominadas": "0652", "Paseo de granjero": "2133", "Kettlebell swing": "0549", "Jalón al pecho": "0197", "Curl martillo": "0313", "Sentadilla búlgara": "0410", "Hip thrust": "1409"};
+const MED={};
+const X=[["Press de banca",0,[45,18,45,12,45,10]],["Press inclinado con mancuernas",0,[18,8,18,7,18,7]],["Press militar con mancuernas",0,[12,8,12,8,12,8]],["Remo alto con barra",0,[30,12,30,10,30,10]],["Tríceps en polea",0,[22.5,15,27,8,27,6]],["Remo inclinado con barra",1,[40,15,40,15,40,12]],["Jalón al pecho",1,[52,10,52,10,52,10]],["Remo con mancuerna",1,[20,10,20,10,20,10]],["Aperturas inversas con mancuernas",1,[12,6,6,10,6,15]],["Curl martillo",1,[6,20,12,5,12,5]],["Sentadilla trasera",2,[]],["Peso muerto",2,[]],["Sentadilla búlgara",2,[]],["Rumano con mancuerna",2,[]]];
+const G=['Empuje','Tirón','Pierna'],MAIN=[0,5,10,11];
+const F={'Banana (unidad 75 g)':[16.5,0],'Arroz blanco cocido (cucharada 20 g)':[5,0],'Whey protein (dosis)':[0,21.245]};
+const def=()=>({tab:'res',wk:0,
+ p:{name:'JOSMIM FRANCISCO',sex:'Masculino',start:'2026-06-01',fmin:5,fights:6},
+ ini:{date:'2026-05-25',age:33,h:177,kg:77.9,neck:40,abd:94,hip:'',bf:20.95855057},
+ fin:{date:'',age:33,h:177,kg:77.4,neck:42,abd:90,hip:'',bf:16.62619853},
+ vo:{ini:25.29844098,d0:1640,d1:''},
+ test:X.map(x=>({n:x[0],g:x[1],s:[0,1,2].map(i=>({kg:x[2][2*i]??'',reps:x[2][2*i+1]??''}))})),
+ re:X.map(()=>({kg:'',reps:''})),
+ pl:{int:[.6,.6,.6,.6],reps:20,done:{},ae:{},fin:{},top:Array.from({length:4},()=>X.map(()=>({kg:'',reps:''})))},
+ nu:{pre:[['Banana (unidad 75 g)',3],['Banana (unidad 75 g)',1],['Banana (unidad 75 g)',1]],post:[['Arroz blanco cocido (cucharada 20 g)',4],['Whey protein (dosis)',1],['Arroz blanco cocido (cucharada 20 g)',0]]}});
+const KEY='bjj_cur_athlete';let DB={cur:'',list:{}},S=def();
+const jf=async(u,o={})=>{o.headers=Object.assign({'X-Requested-With':'bjj'},o.headers||{});const r=await fetch('/api'+u,o);if(r.status==401&&!u.startsWith('/auth/')){U=null;authDraw();throw new Error('Sesión vencida')}if(!r.ok){let m='';try{m=(await r.json()).error}catch(e){}throw new Error(m||('Error '+r.status))}return r.status==204?null:r.json()};
+const sync=(m,bad)=>{const e=document.getElementById('sync');if(e){e.textContent=m;e.style.color=bad?'var(--bad)':''}};
+const push=async(id,d)=>{sync('Guardando…');try{await jf('/athletes/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});sync('Guardado')}catch(e){sync('No se pudo guardar en el servidor',1)}};
+const TM={};
+const save=()=>{try{localStorage.setItem(KEY,DB.cur)}catch(e){}DB.list[DB.cur]=S;const id=DB.cur,d=S;clearTimeout(TM[id]);TM[id]=setTimeout(()=>push(id,d),400)};
+async function boot(){
+ try{
+  const [cat,all]=await Promise.all([jf('/exercises'),jf('/athletes?full=1')]);
+  CAT=cat;byId=Object.fromEntries(CAT.map(c=>[c[0],c]));CAT.forEach(c=>{MED[c[0]]={i:'/media/images/'+c[7],g:'/media/videos/'+c[8]}});
+  DB={cur:'',list:{}};all.forEach(a=>{DB.list[a.id]=a.data});
+  if(!all.length){DB.list.a1=U.role=='admin'?def():blank({name:U.name});await push('a1',DB.list.a1)}
+  let k='';try{k=localStorage.getItem(KEY)||''}catch(e){}
+  DB.cur=DB.list[k]?k:Object.keys(DB.list)[0];S=norm(DB.list[DB.cur]);draw();sync('Conectado al servidor');if(S.tab=='com')comLoad();if(S.tab=='inv')invLoad()
+ }catch(e){if(!U)return;document.getElementById('v').innerHTML='<div class=card><b>No se pudo conectar con el servidor.</b><br><small>Verifica que el backend esté en marcha: docker compose ps</small></div>'}}
+function norm(s){const b=blank({name:(s.p&&s.p.name)||''});for(const k of Object.keys(b))if(s[k]===undefined)s[k]=b[k];
+ s.p=Object.assign({belt:'Blanca',stripes:0,birth:'',years:'',goal:'Fuerza máxima',days:3,injuries:'',photo:''},s.p);
+ for(const k of['ini','fin'])s[k]=Object.assign({},b[k],s[k]);
+ s.pl=Object.assign({int:[.6,.6,.6,.6],reps:20,done:{},ae:{},fin:{}},s.pl);
+ if(!Array.isArray(s.pl.top))s.pl.top=Array.from({length:4},()=>X.map(()=>({kg:'',reps:''})));
+ return s}
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const n=(x,d=1)=>x===''||x==null||isNaN(x)?'—':(+x).toFixed(d);
+const rm=(k,r)=>!(+k)||!(+r)?0:r==1?+k:k*(1+.0333*r);
+const rmT=i=>{const s=S.test[i].s[2];return rm(s.kg,s.reps)},rmR=i=>rm(S.re[i].kg,S.re[i].reps);
+const cls=r=>r>=1?'Campeón':r>=.9?'Competitivo':r>=.8?'Precompetitivo':r>=.7?'En evolución':r>=.6?'Débil':r>=.5?'Muy débil':'Superviviente';
+const fat=b=>(+b.kg&&+b.bf)?b.kg*b.bf/100:'',ffm=b=>fat(b)===''?'':b.kg-fat(b),coop=d=>d?(d-504.9)/44.73:0;
+const dl=(a,b,good)=>{if(!a||!b&&b!==0||b==='')return'<small>—</small>';const d=b-a,c=d==0?'':((d<0)==(good<0)?'up':'dn');return`<span class="${c}">${d>0?'+':''}${d.toFixed(1)}</span>`};
+const pc=x=>x==null||isNaN(x)?'—':(x*100).toFixed(1)+' %';
+const I=(p,v,t='number',st='any')=>`<input data-p="${p}" type=${t} step=${st} value="${esc(v)}">`;
+const TABS=[['at','Atleta'],['res','Resumen'],['test','Test de fuerza'],['plan','Entrenamiento'],['ret','Reteste'],['nut','Nutrición'],['ex','Ejercicios'],['com','Comunidad']];
+
+const lineChart=(labels,series,y0,y1,step,ax,fm,aria,legend,cn=[],ref=null)=>{
+ if(!series.some(s=>s.pts.some(v=>v!=null)))return'<small>Aún no hay datos para graficar.</small>';
+ const W=360,H=240,L=36,R=14,T=18,B=48,pw=W-L-R,ph=H-T-B,n=labels.length,X=i=>L+pw*(i+.5)/n,Y=v=>T+ph-(v-y0)/(y1-y0)*ph;
+ let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${aria}" style="display:block;max-width:560px;margin:0 auto">`;
+ for(let t=y0;t<=y1+1e-9;t+=step)s+=`<line x1="${L}" x2="${W-R}" y1="${Y(t)}" y2="${Y(t)}" stroke-dasharray="3 3" style="stroke:var(--ln)"/><text x="${L-4}" y="${Y(t)+3}" text-anchor="end" font-size="9" style="fill:var(--mu)">${ax(t)}</text>`;
+ if(ref)s+=`<line x1="${L}" x2="${W-R}" y1="${Y(ref.v)}" y2="${Y(ref.v)}" stroke-dasharray="5 4" stroke-width="1.5" opacity=".7" style="stroke:var(${ref.c})"/>`;
+ labels.forEach((l,i)=>{s+=`<text x="${X(i)}" y="${H-26}" text-anchor="middle" font-size="10" style="fill:var(--tx)">${l}</text>`});
+ cn.forEach(k=>{s+=`<line x1="${X(k.i)}" x2="${X(k.i)}" y1="${Y(k.a)}" y2="${Y(k.b)}" stroke-width="2" opacity=".55" style="stroke:var(${k.c})"/>`});
+ series.forEach(se=>{
+  se.pts.forEach((v,i)=>{if(!i||v==null)return;let j=i-1;while(j>=0&&se.pts[j]==null)j--;if(j<0)return;s+=`<line x1="${X(j)}" y1="${Y(se.pts[j])}" x2="${X(i)}" y2="${Y(v)}" stroke-width="2.5" stroke-linecap="round" style="stroke:var(${se.sc?se.sc[i]:se.c})"/>`});
+  se.pts.forEach((v,i)=>{if(v==null)return;const c=se.mk?se.mk[i]:se.c,pos=Array.isArray(se.lp)?se.lp[i]:se.lp;
+   s+=`<circle cx="${X(i)}" cy="${Y(v)}" r="4.5" stroke-width="1.5" style="fill:var(${c});stroke:var(--sf)"/><text x="${X(i)}" y="${Y(v)+(pos=='b'?15:-9)}" text-anchor="middle" font-size="9" font-weight="600" style="fill:var(--tx)">${fm(v)}</text>`})});
+ let lx=L;legend.forEach(([c,t])=>{s+=`<rect x="${lx}" y="${H-12}" width="12" height="4" rx="2" style="fill:var(${c})"/><text x="${lx+16}" y="${H-6}" font-size="9" style="fill:var(--mu)">${t}</text>`;lx+=16+t.length*4.7+14});
+ return s+'</svg>'};
+const fChart=()=>{
+ const names=['Press de banca','Remo','Sentadilla','Peso muerto'],i=MAIN[CH],b0=+S.ini.kg||0,b1=+S.fin.kg||b0,pos=x=>x>0&&isFinite(x)?x:null;
+ const ini=pos(rmT(i)/b0),wk=[0,1,2,3].map(k=>{const t=S.pl.top[k][i];return pos(rm(t.kg,t.reps)/b1)}),ret=pos(rmR(i)/b1);
+ const pts=[ini,...wk,ret],all=pts.filter(x=>x!=null);
+ const btns=names.map((l,k)=>`<button data-lift="${k}" aria-pressed="${k==CH}" style="${k==CH?'background:var(--ac);color:var(--ac2)':''}">${l}</button>`).join('');
+ let c,note='';
+ if(!all.length)c='<small>Aún no hay datos de este levantamiento: registra el test inicial, tus mejores series semanales y el retest.</small>';
+ else{
+  const lo=Math.max(0,Math.floor((Math.min(...all)-.05)*10)/10);let hi=Math.ceil((Math.max(...all)+.05)*10)/10;if(hi-lo<.3)hi=lo+.3;
+  let prev=null;const lp=pts.map(v=>{const r=v!=null&&prev!=null&&v<prev?'b':'a';if(v!=null)prev=v;return r});
+  c=lineChart(['Inicial','Sem 1','Sem 2','Sem 3','Sem 4','Retest'],[{c:'--mu',pts,mk:['--bad','--mu','--mu','--mu','--mu','--ok'],sc:['--mu','--mu','--mu','--mu','--mu','--ok'],lp}],lo,hi,hi-lo>.6?.1:.05,t=>t.toFixed(2),x=>x.toFixed(2),'Fuerza relativa de '+names[CH]+': inicial, semanas de entrenamiento y retest',[['--bad','Inicial'],['--mu','Semanas de entrenamiento'],['--ok','Retest']],[],ini?{v:ini,c:'--bad'}:null);
+  const last=ret??[...wk].reverse().find(x=>x!=null);
+  if(ini&&last!=null){const d=(last-ini)/ini*100;note=`<br><b class="${d>=0?'up':'dn'}">${ret!=null?'Retest':'Última semana'} vs inicial: ${d>=0?'+':''}${d.toFixed(1)} %</b>`}}
+ return`<div class=card><div class=row style="flex-wrap:wrap;justify-content:flex-start;gap:6px;margin-bottom:8px">${btns}</div>${c}<small>Fuerza relativa = 1RM estimado ÷ peso corporal. La línea roja punteada marca tu nivel inicial. Las semanas usan la mejor serie que registras en Entrenamiento.${note}</small></div>`};
+const vChart=()=>{
+ const vi=+S.vo.ini||null,v1=coop(S.vo.d1)||null,a=[vi,v1].filter(x=>x),lo=Math.floor(Math.min(...a)-3),hi=Math.ceil(Math.max(...a)+3);
+ const col=v1&&vi?(v1>vi?'--ok':v1<vi?'--bad':'--mu'):'--ok';
+ const c=lineChart(['Inicial','Final (reteste)'],[{c:col,pts:[vi,v1],mk:['--mu',col],sc:[col,col],lp:v1&&vi&&v1<vi?['a','b']:['b','a']}],lo,hi,Math.max(1,Math.round((hi-lo)/5)),t=>t.toFixed(0),x=>x.toFixed(1),'VO2máx inicial y final',[['--mu','Inicial'],['--ok','Final: mejora'],['--bad','Final: baja']]);
+ return`<div class=card>${c}<small>${v1&&vi?'Cambio: <b class="'+(v1>=vi?'up':'dn')+'">'+(v1-vi>=0?'+':'')+((v1-vi)/vi*100).toFixed(1)+' % ('+(v1-vi>=0?'+':'')+(v1-vi).toFixed(1)+' ml/kg/min)</b>':'Esperando el reteste: ingresa la distancia de 12 min en la pestaña Reteste.'}</small></div>`};
+function res(){
+ const a=S.ini,b=S.fin;
+ const bc=[['Masa corporal (kg)','kg',-1],['Cuello (cm)','neck',0],['Abdomen (cm)','abd',-1],['Cadera (cm)','hip',0],['Grasa (%)','bf',-1]];
+ const rows=bc.map(([l,k,g])=>`<tr><td>${l}<td>${I('ini.'+k,a[k])}<td>${I('fin.'+k,b[k])}<td>${dl(+a[k],+b[k],g)}`).join('')+
+ `<tr><td>Grasa (kg)<td>${n(fat(a))}<td>${n(fat(b))}<td>${dl(fat(a),fat(b),-1)}<tr><td>Masa libre de grasa (kg)<td>${n(ffm(a))}<td>${n(ffm(b))}<td>${dl(ffm(a),ffm(b),1)}`;
+ const gainFat=(b.bf-a.bf)/-a.bf;
+ const L=MAIN.map(i=>{const r0=rmT(i)/a.kg,r1=rmR(i)/b.kg,done=rmR(i)>0;return`<tr><td>${esc(S.test[i].n)}<td>${n(rmT(i))}<td>${n(r0,2)}<td>${done?n(rmR(i)):'<small>Pendiente</small>'}<td>${done?n(r1,2):'—'}<td>${rmT(i)?(done?pc((r1-r0)/r0):'<small>Falta reteste</small>'):'<small>Falta test</small>'}<td>${rmT(i)?cls(r0):'—'}`}).join('');
+ const ok=MAIN.filter(i=>rmT(i)&&rmR(i)),imp=ok.length?ok.reduce((s,i)=>s+rmR(i)/S.fin.kg,0)/ok.reduce((s,i)=>s+rmT(i)/S.ini.kg,0)-1:null;
+ const v1=coop(S.vo.d1),vi=S.vo.ini;
+ const w=[0,1,2,3].map(k=>wkPct(k));
+ return`<h2>Boletín</h2><div class=g><div class="card k"><small>Mejora de grasa corporal</small><b class="${gainFat>0?'up':'dn'}">${pc(gainFat)}</b><small>${n(a.bf)} % → ${n(b.bf)} %</small></div>
+ <div class="card k"><small>Mejora de VO₂máx</small><b>${v1&&vi?pc((v1-vi)/vi):'—'}</b><small>${v1?n(vi)+' → '+n(v1):'Esperando reteste'}</small></div>
+ <div class="card k"><small>Mejora de fuerza relativa</small><b>${imp==null?'—':pc(imp)}</b><small>${imp==null?'Esperando reteste':'Suma de '+ok.length+' levantamientos'}</small></div>
+ <div class="card k"><small>Aprovechamiento (meta 80 %)</small><b>${pc(w.reduce((x,y)=>x+y,0)/4)}</b><small>Promedio de las 4 semanas</small></div></div>
+ <h2>Composición corporal</h2><div class="card sc"><div class=row style="gap:12px"><small>Estatura ${I('ini.h',a.h)}</small><small>Edad ${I('ini.age',a.age)}</small></div>
+ <table><tr><th><th>Inicial<br><input data-p=ini.date type=date value="${a.date}"><th>Final<br><input data-p=fin.date type=date value="${b.date}"><th>Cambio</tr>${rows}</table></div>
+ <h2>Fuerza: 1RM y fuerza relativa</h2><div class="card sc"><table><tr><th>Ejercicio<th>1RM inicial<th>Relativa<th>1RM final<th>Relativa<th>Mejora<th>Nivel</tr>${L}</table></div>${fChart()}<h2>VO₂máx: inicial vs final</h2>${vChart()}
+ <h2>Datos de pelea</h2><div class="card g"><div><small>Duración de pelea (min)</small>${I('p.fmin',S.p.fmin)}</div><div><small>Peleas en campeonato</small>${I('p.fights',S.p.fights)}</div><div class=k><small>Esfuerzo total</small><b>${S.p.fmin*S.p.fights} min</b></div></div>
+ ${DB.cur=='a1'?'<button onclick="if(confirm(\'¿Volver a los datos del Excel de este atleta?\')){S=def();save();draw()}">Restablecer datos del Excel</button>':''}`}
+
+function test(){
+ const blocks=G.map((g,gi)=>`<h2>${g}</h2><div class="card sc"><table><tr><th>Ejercicio<th colspan=2>Serie 1<th colspan=2>Serie 2<th colspan=2>Serie 3<th>1RM</tr><tr><th><th>kg<th>reps<th>kg<th>reps<th>kg<th>reps<th></tr>`+
+  S.test.map((t,i)=>t.g!=gi?'':`<tr><td>${nm(t.n)}`+t.s.map((s,j)=>`<td>${I(`test.${i}.s.${j}.kg`,s.kg)}<td>${I(`test.${i}.s.${j}.reps`,s.reps)}`).join('')+`<td><b>${n(rmT(i))}</b>`).join('')+`</table></div>`).join('');
+ return`<h2>Semana de test</h2><small>Lunes empuje · Martes VO₂máx · Miércoles descanso · Jueves tirón · Viernes pierna · Sábado clase · Domingo descanso. Descanso entre series: 3 min. Meta: llegar en la última serie a la mayor carga entre 3 y 5 repeticiones. 1RM = carga × (1 + 0,0333 × reps) de la última serie.</small>${blocks}
+ <h2>Test de VO₂máx</h2><div class="card g"><div><small>Distancia en 12 min (m), cinta al 1 %</small>${I('vo.d0',S.vo.d0)}</div><div class=k><small>VO₂máx (Excel)</small><b>${n(S.vo.ini)}</b></div><div class=k><small>vVO₂máx (km/h)</small><b>${n(S.vo.d0/12*.06)}</b></div></div>`}
+
+const wkPct=k=>{let d=0,t=0;S.test.forEach((e,i)=>{if(e.g>2)return;for(let s=0;s<3;s++){t++;d+=S.pl.done[`${k}.${i}.${s}`]?1:0}});return t?d/t:0};
+function plan(){
+ const k=S.wk,it=S.pl.int[k],vv=S.vo.d0/12*.06;
+ const g=G.map((gn,gi)=>{const fn=S.pl.fin[k+'.'+gi];
+  return`<tr><td colspan=8 style="text-align:left;background:var(--sf2)"><b>${gn}</b> ${fn?'<span class=up>✔ Finalizado'+(fn.post?' · Compartido':'')+'</span>':''} ${fn&&fn.post?'':`<button data-fin="${k}.${gi}" style="padding:4px 10px;margin-left:6px">${fn?'Compartir':'Finalizar y compartir'}</button>`}</tr>`+
+  S.test.map((e,i)=>e.g!=gi?'':`<tr><td>${nm(e.n)}<td>${rmT(i)?n(it*rmT(i)):'<small>Sin 1RM</small>'}<td>${S.pl.reps}`+[0,1,2].map(s=>`<td><input type=checkbox data-ck="${k}.${i}.${s}" aria-label="Serie ${s+1} de ${esc(e.n)}" ${S.pl.done[`${k}.${i}.${s}`]?'checked':''}>`).join('')+`<td>${I(`pl.top.${k}.${i}.kg`,S.pl.top[k][i].kg)}<td>${I(`pl.top.${k}.${i}.reps`,S.pl.top[k][i].reps)}`).join('')}).join('');
+ const ae=[0,.1].map((x,j)=>{const key=`${k}.${j}`,v=(S.pl.int[k]+x)*vv;return`<tr><td>Sesión ${j+1}<td>30 min<td>${pc(S.pl.int[k]+x)}<td>${n(v,2)} km/h<td><input type=checkbox data-ae="${key}" ${S.pl.ae[key]?'checked':''}>`}).join('');
+ const p=wkPct(k);
+ return`<div class=row style="margin-top:12px">${[0,1,2,3].map(w=>`<button style="${w==k?'background:var(--ac);color:var(--ac2)':''}" onclick="S.wk=${w};draw()">Semana ${w+1}</button>`).join('')}</div>
+ <div class="card g"><div><small>Intensidad (% del 1RM)</small><input data-p="pl.int.${k}" type=number step=.05 value="${it}"></div><div><small>Repeticiones</small>${I('pl.reps',S.pl.reps)}</div><div class=k><small>Aprovechamiento</small><b class="${p>=.8?'up':''}">${pc(p)}</b><small>Meta 80 %</small><div class=bar><i style="width:${Math.min(100,p*100)}%"></i></div></div></div>
+ <small>Lunes empuje · Martes aeróbico · Miércoles pierna · Jueves descanso · Viernes tirón · Sábado aeróbico · Domingo descanso. Anota tu mejor serie de la semana (kg y reps reales): alimenta la gráfica de fuerza del Resumen. Al terminar cada día, usa «Finalizar y compartir».</small>
+ <div class="card sc"><table style="min-width:560px"><tr><th>Ejercicio<th>Carga (kg)<th>Reps<th>S1<th>S2<th>S3<th>kg real<th>Reps real</tr>${g}</table></div>
+ <h2>Aeróbico</h2><div class="card sc"><table><tr><th>Sesión<th>Duración<th>Intensidad<th>Velocidad<th>Hecho</tr>${ae}</table></div>`}
+
+function reteste(){
+ const rows=G.map((g,gi)=>`<h2>${g}</h2><div class="card sc"><table><tr><th>Ejercicio<th>Build-up (80 %)<th>Test kg<th>Reps<th>1RM nuevo<th>1RM inicial<th>Mejora</tr>`+S.test.map((t,i)=>t.g!=gi?'':`<tr><td>${esc(t.n)}<td>${rmT(i)?n(.8*t.s[2].kg)+' × 5-7':'—'}<td>${I(`re.${i}.kg`,S.re[i].kg)}<td>${I(`re.${i}.reps`,S.re[i].reps)}<td><b>${n(rmR(i))}</b><td>${n(rmT(i))}<td>${rmT(i)&&rmR(i)?pc((rmR(i)-rmT(i))/rmT(i)):'—'}`).join('')+'</table></div>').join('');
+ const v1=coop(S.vo.d1),vi=S.vo.ini;
+ return`${rows}<h2>Reteste de VO₂máx</h2><div class="card g"><div><small>Distancia nueva en 12 min (m)</small>${I('vo.d1',S.vo.d1)}</div><div class=k><small>Anterior</small><b>${S.vo.d0} m</b><small>VO₂ ${n(vi)}</small></div><div class=k><small>Nuevo</small><b>${v1?n(v1):'—'}</b><small>vVO₂ ${n(S.vo.d1/12*.06)} km/h · ${v1&&vi?pc((v1-vi)/vi):''}</small></div></div><small>El VO₂ nuevo usa la fórmula de Cooper; puede diferir unas décimas del valor del Excel.</small>`}
+
+function nut(){
+ const kg=S.ini.kg,tot=(rows)=>rows.reduce((s,[f,q])=>({c:s.c+F[f][0]*q,p:s.p+F[f][1]*q}),{c:0,p:0});
+ const pre=tot(S.nu.pre),po=tot(S.nu.post),tp=kg,tc=kg*.8,tpr=kg*.2;
+ const tbl=(k)=>S.nu[k].map(([f,q],i)=>`<tr><td><select data-p="nu.${k}.${i}.0">${Object.keys(F).map(o=>`<option ${o==f?'selected':''}>${o}</option>`).join('')}</select><td>${I(`nu.${k}.${i}.1`,q)}<td>${n(F[f][0]*q)}<td>${n(F[f][1]*q)}`).join('');
+ const ad=ok=>`<b class="${ok?'up':'dn'}">${ok?'Adecuado':'Por debajo de las necesidades'}</b>`;
+ return`<h2>Pre-entreno (1 hora antes)</h2><div class="card sc"><div class=row><span>Meta de carbohidratos: <b>${n(tp)} g</b> (1 g/kg)</span>${ad(pre.c>=tp)}</div><table><tr><th>Alimento<th>Cantidad<th>Carbs (g)<th>Proteína (g)</tr>${tbl('pre')}<tr><td><b>Total</b><td><td><b>${n(pre.c)}</b><td><b>${n(pre.p)}</b></table></div>
+ <h2>Post-entreno</h2><div class="card sc"><div class=row><span>Metas: <b>${n(tc)} g</b> carbs (0,8 g/kg) · <b>${n(tpr)} g</b> proteína (0,2 g/kg)</span>${ad(po.c>=tc&&po.p>=tpr)}</div><table><tr><th>Alimento<th>Cantidad<th>Carbs (g)<th>Proteína (g)</tr>${tbl('post')}<tr><td><b>Total</b><td><td><b>${n(po.c)}</b><td><b>${n(po.p)}</b></table></div>
+ <div class=card><b>Consejo de oro</b><br>Consume 23 g de proteína cada 3 a 4 horas.<br><br><b>Cómo elegir un buen whey</b><br>En una porción de 30 g: mínimo 22 g de proteína y 2,2 g de leucina, y no más de 6,5 g de carbohidratos.</div><small>Las metas usan el peso inicial (${kg} kg), igual que el Excel.</small>`}
+
+function exAlt(){
+ const T=[['Tirón',[['Remo inclinado con barra'],['Jalón al pecho','Jalón agarre supino','Jalón agarre triángulo'],['Remo con mancuerna','Remo bajo','Remo sentado en máquina'],['Aperturas inversas con mancuernas','Aperturas inversas en máquina','Cruce en polea alta'],['Curl martillo','Curl con barra W','Curl en máquina (Scott)']]],
+ ['Empuje',[['Press de banca'],['Press inclinado con mancuernas','Press inclinado con barra','Press inclinado en máquina'],['Press militar con mancuernas','Press militar con barra','Press de hombro en máquina'],['Elevación lateral con mancuernas','Elevación lateral inclinada','Remo alto con barra'],['Tríceps en polea','Press francés con mancuerna','Rompecráneos con barra']]],
+ ['Tren inferior',[['Sentadilla trasera'],['Peso muerto'],['Sentadilla búlgara','Zancadas con mancuernas','Zancadas en Smith'],['Rumano con mancuernas','Rumano con barra','Curl femoral sentado']]]];
+ return'<h2>Alternativas del plan (Excel)</h2><small>Si quieres modificar el plan, usa estas alternativas.</small>'+T.map(([g,l])=>`<div class="card sc"><b>${g}</b><table>${l.map(r=>'<tr>'+r.map(c=>`<td>${c}`).join('')+'</tr>').join('')}</table></div>`).join('')}
+
+
+const BPN={'upper arms':'Brazos','upper legs':'Piernas (muslo)','back':'Espalda','waist':'Abdomen','chest':'Pecho','shoulders':'Hombros','lower legs':'Pantorrillas','lower arms':'Antebrazos','cardio':'Cardio','neck':'Cuello'};
+const ESN=Object.fromEntries(Object.entries(MAP).map(([k,v])=>[v,k]));
+let byId=Object.fromEntries(CAT.map(c=>[c[0],c]));
+const ATT='© Gym visual — https://gymvisual.com/';
+const nm=name=>{const id=MAP[name];return id&&MED[id]?`<span class=nm data-open="${id}"><img src="${MED[id].i}" width=32 height=32 alt="">${esc(name)}</span>`:esc(name)};
+let LQ={q:'',bp:'',eq:'',n:60};
+function ex(){const bps=[...new Set(CAT.map(c=>c[2]))].sort(),eqs=[...new Set(CAT.map(c=>c[3]))].sort();
+ return`<h2>Biblioteca de ejercicios</h2><small>${CAT.length} ejercicios. Las instrucciones están en español; los nombres, en inglés. Los ejercicios de tu plan tienen foto y animación.</small>
+ <div class="card g"><div><small>Buscar (en inglés)</small><input id=lq data-lib=q value="${esc(LQ.q)}" placeholder="bench press, row…"></div><div><small>Zona</small><select data-lib=bp><option value="">Todas</option>${bps.map(b=>`<option value="${b}" ${LQ.bp==b?'selected':''}>${BPN[b]||b}</option>`).join('')}</select></div><div><small>Equipo</small><select data-lib=eq><option value="">Todos</option>${eqs.map(b=>`<option ${LQ.eq==b?'selected':''}>${b}</option>`).join('')}</select></div></div>
+ <div id=exl></div><small>Medios: ${ATT}</small>`+exAlt()}
+function exl(){const q=LQ.q.toLowerCase(),r=CAT.filter(c=>(!q||c[1].includes(q)||(ESN[c[0]]||'').toLowerCase().includes(q))&&(!LQ.bp||c[2]==LQ.bp)&&(!LQ.eq||c[3]==LQ.eq));
+ const el=$('#exl');if(!el)return;
+ el.innerHTML=`<small>${r.length} resultados</small><div class=card style="padding:4px 12px">`+r.slice(0,LQ.n).map(c=>`<div class="row nm" data-open="${c[0]}" style="padding:8px 0;border-top:1px solid var(--ln)"><span class=nm>${MED[c[0]]?`<img loading=lazy src="${MED[c[0]].i}" width=40 height=40 alt="" style="border-radius:6px">`:'<span style="width:40px;height:40px;border-radius:6px;background:var(--sf2);display:inline-block"></span>'}<span><b>${esc(ESN[c[0]]||c[1])}</b><br><small>${BPN[c[2]]||c[2]} · ${c[3]}</small></span></span></div>`).join('')+`</div>`+(r.length>LQ.n?`<button data-more=1>Ver más</button>`:'')}
+function openEx(id){const c=byId[id];if(!c)return;const m=MED[id],st=c[6].split('|').filter(Boolean);
+ const o=document.createElement('div');o.className='modal';o.innerHTML=`<div role=dialog aria-label="${esc(c[1])}"><div class=row><h2 style="margin:0">${esc(ESN[id]||c[1])}</h2><button data-close=1>Cerrar</button></div><small>${esc(c[1])}</small>
+ ${m?`<p><img src="${m.g||m.i}" width=180 height=180 alt="${esc(c[1])}" style="border-radius:10px"><br><small>${ATT}</small></p>`:'<p><small>Sin imagen incluida para este ejercicio.</small></p>'}
+ <p><b>Zona:</b> ${BPN[c[2]]||c[2]}<br><b>Equipo:</b> ${c[3]}<br><b>Músculo principal:</b> ${c[4]}<br><b>Secundarios:</b> ${c[5]||'—'}</p><b>Cómo se hace</b><ol>${st.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>`;
+ document.body.appendChild(o)}
+document.addEventListener('click',e=>{const t=e.target;if(t.closest('[data-close]')||t.classList.contains('modal')){document.querySelector('.modal')?.remove();return}
+ const op=t.closest('[data-open]');if(op){openEx(op.dataset.open);return}if(t.closest('[data-more]')){LQ.n+=60;exl()}});
+document.addEventListener('input',e=>{if(e.target.dataset.lib=='q'){LQ.q=e.target.value;LQ.n=60;exl()}});
+document.addEventListener('change',e=>{const k=e.target.dataset.lib;if(k&&k!='q'){LQ[k]=e.target.value;LQ.n=60;exl()}});
+
+
+const BELTS=['Blanca','Azul','Púrpura','Marrón','Negra'],GOALS=['Fuerza máxima','Potencia','Hipertrofia','Resistencia muscular','Pérdida de grasa','Preparar campeonato'];
+const today=()=>new Date().toISOString().slice(0,10);
+const age=b=>{if(!b)return'';const d=new Date(b),t=new Date();let a=t.getFullYear()-d.getFullYear();if(t<new Date(t.getFullYear(),d.getMonth(),d.getDate()))a--;return a};
+const blank=q=>({tab:'res',wk:0,p:{name:q.name,sex:q.sex||'Masculino',start:today(),fmin:5,fights:6,belt:q.belt||'Blanca',stripes:0,birth:q.birth||'',years:'',goal:q.goal||'Fuerza máxima',days:+q.days||3,injuries:''},
+ ini:{date:today(),age:age(q.birth),h:+q.h||'',kg:+q.kg||'',neck:'',abd:'',hip:'',bf:''},fin:{date:'',age:age(q.birth),h:+q.h||'',kg:'',neck:'',abd:'',hip:'',bf:''},vo:{ini:0,d0:'',d1:''},
+ test:X.map(x=>({n:x[0],g:x[1],s:[0,1,2].map(()=>({kg:'',reps:''}))})),re:X.map(()=>({kg:'',reps:''})),pl:{int:[.6,.6,.6,.6],reps:20,done:{},ae:{},fin:{},top:Array.from({length:4},()=>X.map(()=>({kg:'',reps:''})))},
+ nu:{pre:[0,1,2].map(()=>['Banana (unidad 75 g)',0]),post:[0,1,2].map(()=>['Arroz blanco cocido (cucharada 20 g)',0])}});
+let NA={};
+const opt=(a,v)=>a.map(o=>`<option ${o==v?'selected':''}>${o}</option>`).join('');
+const BELT={'Blanca':['#F4F4F2','#111827'],'Azul':['#1D4ED8','#111827'],'Púrpura':['#6D28D9','#111827'],'Marrón':['#78350F','#111827'],'Negra':['#18181B','#C62828']};
+const beltSvg=(belt,st,w=240)=>{const [c,bar]=BELT[belt]||BELT.Blanca,n=Math.max(0,Math.min(belt=='Negra'?6:4,+st||0)),ln=belt=='Negra'?'rgba(255,255,255,.18)':'rgba(0,0,0,.2)';
+ let s=`<svg viewBox="0 0 240 40" width="${w}" role="img" aria-label="Cinturón ${belt||'Blanca'}, ${n} ${n==1?'grado':'grados'}" style="max-width:100%"><rect x="2" y="8" width="236" height="24" rx="4" fill="${c}" stroke="${belt=='Blanca'||!belt?'#9CA3AF':'rgba(0,0,0,.35)'}" stroke-width="1.5"/><line x1="6" x2="234" y1="14" y2="14" stroke="${ln}"/><line x1="6" x2="234" y1="26" y2="26" stroke="${ln}"/><rect x="160" y="8" width="64" height="24" fill="${bar}"/>`;
+ for(let i=0;i<n;i++)s+=`<rect x="${214-i*10}" y="8" width="5" height="24" fill="#fff"/>`;
+ return s+'</svg>'};
+const okPhoto=u=>/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(u||'');
+const av=(p,z)=>okPhoto(p.photo)?`<img class=av src="${p.photo}" width=${z} height=${z} alt="Foto de ${esc(p.name||'atleta')}">`:`<span class=av style="width:${z}px;height:${z}px;font-size:${Math.round(z/2.5)}px">${esc((p.name||'?').trim().slice(0,1).toUpperCase())}</span>`;
+const photoCard=()=>{const p=S.p,n=Math.max(0,Math.min(p.belt=='Negra'?6:4,+p.stripes||0));
+ return`<div class=card style="text-align:center">${av(p,120)}<div style="margin:10px 0 4px"><label class=fl style="display:inline-block;position:relative;cursor:pointer;background:var(--sf2);border-radius:10px;padding:8px 13px;font-weight:600;font-size:15px;color:var(--tx);margin:0">${okPhoto(p.photo)?'Cambiar foto':'Subir foto'}<input type=file accept="image/*" data-photo=1 style="position:absolute;opacity:0;inset:0;width:100%;height:100%;cursor:pointer"></label>${okPhoto(p.photo)?' <button data-photo-del=1>Quitar</button>':''}</div>
+ <div style="margin-top:12px">${beltSvg(p.belt,p.stripes,260)}</div><small>Cinturón ${esc(p.belt||'Blanca')} · ${n} ${n==1?'grado':'grados'}</small></div>`};
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.photo)return;const f=t.files&&t.files[0];if(!f)return;if(!/^image\//.test(f.type))return alert('Elige un archivo de imagen.');
+ const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const c=document.createElement('canvas'),z=256;c.width=c.height=z;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,z,z);URL.revokeObjectURL(u);S.p.photo=c.toDataURL('image/jpeg',.85);save();draw()};im.onerror=()=>alert('No se pudo leer la imagen.');im.src=u});
+document.addEventListener('click',e=>{if(e.target.closest('[data-photo-del]')){S.p.photo='';save();draw()}});
+function atl(){const p=S.p;
+ const f=(l,path,v,t='text',x='')=>`<div><small>${l}</small><input data-p="${path}" type=${t} ${x} value="${esc(v)}"></div>`;
+ return`<h2>Mi perfil de atleta</h2>${photoCard()}<div class="card g">${f('Nombre','p.name',p.name)}<div><small>Sexo</small><select data-p=p.sex>${opt(['Masculino','Femenino'],p.sex)}</select></div>${f('Fecha de nacimiento','p.birth',p.birth,'date')}<div><small>Edad</small><input value="${S.ini.age||'—'}" disabled></div>${f('Estatura (cm)','ini.h',S.ini.h,'number')}<div><small>Cinturón</small><select data-p=p.belt>${opt(BELTS,p.belt)}</select></div><div><small>Grados</small><select data-p=p.stripes>${Array.from({length:(p.belt=='Negra'?6:4)+1},(_,i)=>`<option value=${i} ${+p.stripes==i?'selected':''}>${i}</option>`).join('')}</select></div>${f('Años entrenando BJJ','p.years',p.years,'number')}<div><small>Objetivo</small><select data-p=p.goal>${opt(GOALS,p.goal)}</select></div>${f('Días de gym por semana','p.days',p.days,'number')}${f('Inicio del plan','p.start',p.start,'date')}</div>
+ <div class=card><small>Lesiones o notas</small><textarea data-p=p.injuries rows=3 style="width:100%;background:var(--sf2);border:0;border-radius:8px;padding:8px;font:inherit;color:inherit">${esc(p.injuries)}</textarea></div>`}
+let U=null,INV=[],INVLINK='',AU={err:'',token:'',ok:null,inviter:''},CM={v:'feed',feed:null,q:'',res:null,prof:null,me:null,uid:0,open:{}},FIN=null,CH=0;
+const J={'Content-Type':'application/json'};
+// ---------- Invitaciones (admin) ----------
+async function invLoad(){try{INV=await jf('/invites')}catch(e){}draw()}
+function invV(){
+ const rows=INV.map(i=>`<tr><td>${esc(i.note||'—')}<td>${new Date(i.created_at).toLocaleDateString('es')}<td>${new Date(i.expires_at).toLocaleDateString('es')}<td>${i.status=='usada'?'Usada por '+esc(i.used_name||''):i.status}<td>${i.status=='pendiente'?`<button data-invdel="${i.id}">Revocar</button>`:''}</tr>`).join('')||'<tr><td colspan=5><small>Aún no hay invitaciones.</small></tr>';
+ return`<h2>Invitaciones</h2><div class=card><small>Cada enlace abre la página de registro del atleta y solo sirve una vez. Envía el enlace completo.</small><div class=g style="margin-top:8px"><div><small>Nota (para quién es)</small><input id=invn maxlength=80 placeholder="Ej: Entrenador Pedro"></div><div><small>Vence en</small><select id=invd><option value=1>1 día</option><option value=7 selected>7 días</option><option value=30>30 días</option></select></div></div>
+ <div style="margin-top:10px"><button data-invnew=1 style="background:var(--ac);color:var(--ac2)">Crear enlace de invitación</button></div>
+ ${INVLINK?`<p><small>Copia el enlace completo ahora; no se vuelve a mostrar:</small></p><input readonly value="${esc(INVLINK)}" onfocus="this.select()"><div style="margin-top:8px"><button data-copy=1>Copiar enlace</button></div>`:''}</div>
+ <div class="card sc"><table><tr><th>Nota<th>Creada<th>Vence<th>Estado<th></tr>${rows}</table></div>`}
+// ---------- Login y landing de registro ----------
+const loginV=()=>`<div class=card style="max-width:420px;margin:24px auto"><h2 style="margin-top:0">Iniciar sesión</h2><form data-auth=login><label>Correo o usuario</label><input name=login required autocomplete=username><label>Contraseña</label><input name=password type=password required autocomplete=current-password><p class=dn role=alert></p><button style="background:var(--ac);color:var(--ac2);margin-top:12px;width:100%">Entrar</button></form><p><small>¿Aún no tienes cuenta? El registro es solo por invitación: pide a tu entrenador el enlace de invitación.</small></p></div>`;
+function landing(){const a=AU;
+ if(a.ok===0)return`<div class=card style="max-width:520px;margin:24px auto;text-align:center"><h1>BJJ Performance</h1><p class=dn role=alert>${esc(a.err||'Invitación inválida, usada o vencida.')}</p><p><small>Pide a quien te invitó un enlace nuevo.</small></p><a href="/" style="color:var(--ac)">Ir a iniciar sesión</a></div>`;
+ const F=(l,nm,t='text',x='')=>`<div><label>${l}</label><input name=${nm} type=${t} ${x}></div>`;
+ return`<div style="max-width:560px;margin:0 auto"><div class=card style="text-align:center;margin-top:16px"><small>${esc(a.inviter)} te invitó</small><h1 style="font-size:36px;margin:4px 0">Únete a BJJ Performance</h1><p class=mu>Crea tu cuenta y tu perfil de atleta para seguir tu fuerza, tu VO₂máx y tu progreso, y compartir tus entrenamientos con tus compañeros.</p><div id=bp>${beltSvg('Blanca',0,240)}</div></div>
+ <form data-auth=reg><div class=card><h2 style="margin-top:0">Tu cuenta</h2><div class=g>${F('Nombre completo','name','text','required maxlength=80 autocomplete=name')}${F('Usuario (@)','username','text','required minlength=3 maxlength=20 pattern="[A-Za-z0-9_.]{3,20}" autocomplete=username title="3 a 20 caracteres: letras, números, punto o guion bajo"')}${F('Correo','email','email','required autocomplete=email')}<div></div>${F('Contraseña (mínimo 8)','password','password','required minlength=8 autocomplete=new-password')}${F('Repite la contraseña','password2','password','required minlength=8 autocomplete=new-password')}</div></div>
+ <div class=card><h2 style="margin-top:0">Tu perfil de atleta</h2><div class=g><div><label>Sexo</label><select name=sex>${opt(['Masculino','Femenino'])}</select></div>${F('Fecha de nacimiento','birth','date')}${F('Estatura (cm)','h','number','required min=100 max=250')}${F('Peso (kg)','kg','number','required min=30 max=300 step=.1')}<div><label>Cinturón</label><select name=belt>${opt(BELTS)}</select></div><div><label>Grados</label><select name=stripes>${[0,1,2,3,4].map(i=>`<option>${i}</option>`).join('')}</select></div><div><label>Objetivo</label><select name=goal>${opt(GOALS)}</select></div>${F('Días de gym por semana','days','number','min=1 max=6 value=3')}</div></div>
+ <p class=dn role=alert></p><button style="background:var(--ac);color:var(--ac2);width:100%;padding:14px;font-size:16px">Crear mi cuenta</button><p><small>Después podrás subir tu foto y completar tu composición corporal y tus tests.</small></p></form></div>`}
+function authDraw(){$('#tabs').innerHTML='';$('#who').textContent='';$('#sync').textContent='';$('#lo').hidden=true;$('#v').innerHTML=AU.token?landing():loginV()}
+async function start(){
+ try{U=await jf('/auth/me')}catch(e){U=null}
+ const inv=new URLSearchParams(location.search).get('invite');
+ if(inv&&!U){AU.token=inv;try{const r=await jf('/auth/invite/'+encodeURIComponent(inv));AU.ok=1;AU.inviter=r.inviter||''}catch(e){AU.ok=0;AU.err=e.message}}
+ if(U)boot();else authDraw()}
+// ---------- Comunidad ----------
+const ago=t=>{const s=(Date.now()-new Date(t))/1e3;return s<60?'ahora':s<3600?Math.floor(s/60)+' min':s<86400?Math.floor(s/3600)+' h':new Date(t).toLocaleDateString('es')};
+const avu=(u,z)=>u.photo_v?`<img class=av loading=lazy src="/api/users/${u.id}/photo?v=${u.photo_v}" width=${z} height=${z} alt="">`:`<span class=av style="width:${z}px;height:${z}px;font-size:${Math.round(z/2.5)}px">${esc((u.name||'?').slice(0,1).toUpperCase())}</span>`;
+const uline=u=>`<div class=row style="justify-content:flex-start;gap:10px;cursor:pointer" data-uprof="${u.id}" role=button tabindex=0>${avu(u,40)}<div><b>${esc(u.name)}</b> <small>@${esc(u.username)}</small><br>${beltSvg(u.belt,u.stripes,70)}</div></div>`;
+const comH=p=>`<div style="margin-top:8px">${p.comments.map(c=>`<div class=row style="align-items:flex-start;border-top:1px solid var(--ln);padding:6px 0"><div><b>${esc(c.user.name)}</b> <small>@${esc(c.user.username)} · ${ago(c.created_at)}</small><br>${esc(c.text)}</div>${c.user.id==U.id||p.user.id==U.id?`<button class=g data-cdel="${c.id}" data-pid="${p.id}">Borrar</button>`:''}</div>`).join('')}<div class=row style="gap:6px;margin-top:6px"><input id="ci${p.id}" maxlength=300 placeholder="Escribe un comentario…" aria-label="Comentario"><button data-cmt="${p.id}">Enviar</button></div></div>`;
+const postH=p=>{const d=p.data||{},ex=(d.exercises||[]).map(e=>`<tr><td>${esc(e.n)}<td>${esc(e.done)}/${esc(e.total)}<td>${+e.kg?n(+e.kg)+' kg':'—'}<td>${e.top&&+e.top.kg?esc(e.top.kg)+' × '+esc(e.top.reps):'—'}</tr>`).join('');
+ return`<div class=card><div class=row>${uline(p.user)}<small>${ago(p.created_at)}</small></div><div style="margin-top:8px"><b>${esc(d.title||'Entrenamiento')}</b><br><small>${esc(d.sets_done)}/${esc(d.sets_total)} series · ${Math.round(+d.volume||0)} kg de volumen · ${Math.round((+d.intensity||0)*100)} % del 1RM</small></div>
+ <div class=sc><table style="min-width:300px"><tr><th>Ejercicio<th>Series<th>Carga<th>Mejor serie</tr>${ex}</table></div>${p.text?`<p>${esc(p.text)}</p>`:''}
+ <div class=row style="justify-content:flex-start;gap:8px;flex-wrap:wrap"><button data-like="${p.id}" aria-pressed="${p.liked}" style="${p.liked?'background:var(--ac);color:var(--ac2)':''}">♥ ${p.likes}</button><button data-cmtoggle="${p.id}">Comentarios (${p.comments.length})</button>${p.user.id==U.id?`<button class=g data-pdel="${p.id}">Eliminar</button>`:''}</div>${CM.open[p.id]?comH(p):''}</div>`};
+const resH=()=>CM.res==null?'':CM.res.length?CM.res.map(u=>`<div class="card row">${uline(u)}<button data-follow="${u.id}" data-f="${u.following?1:0}">${u.following?'Siguiendo':'Seguir'}</button></div>`).join(''):CM.q.trim().length<2?'<small>Escribe al menos 2 letras.</small>':'<div class=card><small>No se encontró ningún usuario.</small></div>';
+const stats=u=>`<div class=g style="margin-top:12px"><div class=k><b>${u.posts_count}</b><small>Entrenamientos</small></div><div class=k><b>${u.followers}</b><small>Seguidores</small></div><div class=k><b>${u.following_count}</b><small>Siguiendo</small></div></div>`;
+const meH=()=>{const m=CM.me;if(!m)return'<small>Cargando…</small>';
+ return`<div class=card style="text-align:center">${av(S.p,96)}<h2 style="margin:8px 0 0">${esc(U.name)}</h2><div class=mu>@${esc(U.username)}</div><div style="margin-top:8px">${beltSvg(S.p.belt,S.p.stripes,220)}</div>${stats(m)}</div><div class=card><small>Correo</small><div>${esc(U.email)}</div><small>Tus compañeros te encuentran buscando tu @usuario.</small></div>${m.posts.map(postH).join('')}`};
+const profH=()=>{const u=CM.prof;if(!u)return'<small>Cargando…</small>';
+ return`<button data-cv=search class=g>← Volver</button><div class=card style="text-align:center">${avu(u,96)}<h2 style="margin:8px 0 0">${esc(u.name)}</h2><div class=mu>@${esc(u.username)}</div><div style="margin-top:8px">${beltSvg(u.belt,u.stripes,220)}</div>${stats(u)}${u.is_me?'':`<div style="margin-top:12px"><button data-follow="${u.id}" data-f="${u.is_following?1:0}" style="${u.is_following?'':'background:var(--ac);color:var(--ac2)'}">${u.is_following?'Siguiendo':'Seguir'}</button></div>`}</div>${u.is_following||u.is_me?(u.posts.length?u.posts.map(postH).join(''):'<div class=card><small>Aún no ha compartido entrenamientos.</small></div>'):'<div class=card><small>Sigue a este usuario para ver sus entrenamientos.</small></div>'}`};
+function com(){const v=CM.v,sg=k=>`style="${v==k?'background:var(--ac);color:var(--ac2)':''}"`;let b;
+ if(v=='feed')b=CM.feed==null?'<small>Cargando…</small>':CM.feed.length?CM.feed.map(postH).join(''):'<div class=card><small>Aún no hay entrenamientos. Busca a tus compañeros por su usuario y síguelos, o comparte el tuyo al finalizar un entrenamiento.</small></div>';
+ else if(v=='search')b=`<div class=card><label for=cs>Buscar por usuario o nombre</label><input id=cs value="${esc(CM.q)}" placeholder="@usuario" autocomplete=off></div><div id=cres>${resH()}</div>`;
+ else if(v=='me')b=meH();else b=profH();
+ return`<h2>Comunidad</h2><div class=row style="justify-content:flex-start;gap:6px;margin:12px 0"><button data-cv=feed ${sg('feed')}>Inicio</button><button data-cv=search ${sg('search')}>Buscar</button><button data-cv=me ${sg('me')}>Mi usuario</button></div>${b}`}
+async function comLoad(){try{if(CM.v=='feed')CM.feed=await jf('/feed');else if(CM.v=='me')CM.me=await jf('/users/'+U.id);else if(CM.v=='user')CM.prof=await jf('/users/'+CM.uid)}catch(e){if(U)alert(e.message)}draw()}
+const findPost=id=>[...(CM.feed||[]),...((CM.prof&&CM.prof.posts)||[]),...((CM.me&&CM.me.posts)||[])].find(p=>p.id==id);
+// ---------- Finalizar y compartir ----------
+function finSummary(k,gi){const it=S.pl.int[k],ex=[];let ds=0,dt=0,vol=0;
+ S.test.forEach((e,i)=>{if(e.g!=gi)return;let d=0;for(let s=0;s<3;s++)if(S.pl.done[`${k}.${i}.${s}`])d++;const t=S.pl.top[k][i],top=(+t.kg&&+t.reps)?{kg:+t.kg,reps:+t.reps}:null,kg=rmT(i)?+(it*rmT(i)).toFixed(1):0;ds+=d;dt+=3;vol+=d*(top?top.kg:kg)*(top?top.reps:S.pl.reps);ex.push({n:e.n,done:d,total:3,kg,top})});
+ return{kind:'workout',title:`Semana ${k+1} · ${G[gi]}`,week:k+1,group:G[gi],intensity:it,sets_done:ds,sets_total:dt,volume:Math.round(vol),exercises:ex}}
+function openFin(k,gi){const sd=finSummary(k,gi);if(!sd.sets_done)return alert('Marca al menos una serie como completada antes de finalizar.');FIN={k,gi,sd};
+ const o=document.createElement('div');o.className='modal';o.innerHTML=`<div role=dialog aria-label="Finalizar entrenamiento"><div class=row><h2 style="margin:0">Finalizar entrenamiento</h2><button data-close=1>Cerrar</button></div><p><b>${esc(sd.title)}</b><br><small>${sd.sets_done}/${sd.sets_total} series · ${sd.volume} kg de volumen · ${Math.round(sd.intensity*100)} % del 1RM</small></p><div class=sc><table style="min-width:300px"><tr><th>Ejercicio<th>Series<th>Carga<th>Mejor serie</tr>${sd.exercises.map(e=>`<tr><td>${esc(e.n)}<td>${e.done}/${e.total}<td>${e.kg?n(e.kg)+' kg':'—'}<td>${e.top?e.top.kg+' × '+e.top.reps:'—'}`).join('')}</table></div><label for=fintx>Comentario (opcional)</label><textarea id=fintx maxlength=500 rows=3 style="width:100%;background:var(--sf2);border:0;border-radius:8px;padding:8px;font:inherit;color:inherit"></textarea><div class=row style="margin-top:12px;flex-wrap:wrap"><button data-finonly=1>Solo finalizar</button><button data-finshare=1 style="background:var(--ac);color:var(--ac2)">Compartir con la comunidad</button></div><small>Lo verán los usuarios que te siguen.</small></div>`;document.body.appendChild(o)}
+// ---------- Eventos ----------
+document.addEventListener('submit',async e=>{const f=e.target,k=f.dataset&&f.dataset.auth;if(!k)return;e.preventDefault();const d=Object.fromEntries(new FormData(f)),al=f.querySelector('[role=alert]'),bt=f.querySelector('button');if(al)al.textContent='';
+ try{if(k=='login')U=await jf('/auth/login',{method:'POST',headers:J,body:JSON.stringify({login:d.login,password:d.password})});
+  else{if(d.password!==d.password2)throw new Error('Las contraseñas no coinciden');if(bt)bt.disabled=true;U=await jf('/auth/register',{method:'POST',headers:J,body:JSON.stringify({token:AU.token,name:d.name,username:d.username,email:d.email,password:d.password,athlete:{sex:d.sex,birth:d.birth,h:d.h,kg:d.kg,belt:d.belt,stripes:d.stripes,goal:d.goal,days:d.days}})});AU={err:'',token:'',ok:null,inviter:''};history.replaceState(null,'',location.pathname)}
+  await boot();if(k=='reg'){S.tab='at';save();draw()}}catch(er){if(bt)bt.disabled=false;if(al)al.textContent=er.message}});
+document.addEventListener('change',e=>{const f=e.target.closest&&e.target.closest('form[data-auth=reg]');if(!f)return;const el=f.elements;
+ if(e.target.name=='belt'){const m=el.belt.value=='Negra'?6:4;el.stripes.innerHTML=Array.from({length:m+1},(_,i)=>`<option>${i}</option>`).join('')}
+ if(e.target.name=='belt'||e.target.name=='stripes')$('#bp').innerHTML=beltSvg(el.belt.value,el.stripes.value,240)});
+let cst;document.addEventListener('input',e=>{if(e.target.id!='cs')return;CM.q=e.target.value;clearTimeout(cst);cst=setTimeout(async()=>{try{CM.res=CM.q.trim().length>=2?await jf('/users?q='+encodeURIComponent(CM.q.trim())):[]}catch(x){CM.res=[]}const r=$('#cres');if(r)r.innerHTML=resH()},300)});
+document.addEventListener('keydown',e=>{if((e.key=='Enter'||e.key==' ')&&e.target.dataset&&e.target.dataset.uprof){e.preventDefault();e.target.click()}});
+document.addEventListener('click',async e=>{const t=e.target;let b;
+ if(t.closest('[data-logout]')){try{await jf('/auth/logout',{method:'POST'})}catch(x){}U=null;DB={cur:'',list:{}};S=def();INVLINK='';CM={v:'feed',feed:null,q:'',res:null,prof:null,me:null,uid:0,open:{}};authDraw()}
+ else if(t.closest('[data-invnew]')){try{const r=await jf('/invites',{method:'POST',headers:J,body:JSON.stringify({days:+$('#invd').value,note:$('#invn').value})});INVLINK=location.origin+'/?invite='+r.token;invLoad()}catch(x){alert(x.message)}}
+ else if(b=t.closest('[data-invdel]')){if(confirm('¿Revocar esta invitación?')){try{await jf('/invites/'+b.dataset.invdel,{method:'DELETE'})}catch(x){alert(x.message)}invLoad()}}
+ else if(t.closest('[data-copy]')){try{await navigator.clipboard.writeText(INVLINK);t.textContent='Copiado'}catch(x){}}
+ else if(b=t.closest('[data-lift]')){CH=+b.dataset.lift;draw()}
+ else if(b=t.closest('[data-cv]')){CM.v=b.dataset.cv;if(CM.v=='feed')CM.feed=null;if(CM.v=='me')CM.me=null;draw();if(CM.v!='search')comLoad()}
+ else if(b=t.closest('[data-uprof]')){CM.uid=+b.dataset.uprof;CM.v='user';CM.prof=null;S.tab='com';draw();comLoad()}
+ else if(b=t.closest('[data-follow]')){const id=+b.dataset.follow,was=b.dataset.f=='1';try{await jf('/users/'+id+'/follow',{method:was?'DELETE':'POST'})}catch(x){return alert(x.message)}
+  (CM.res||[]).forEach(u=>{if(u.id==id)u.following=!was});CM.feed=null;if(CM.v=='user'&&CM.prof&&CM.prof.id==id){CM.prof=null;draw();comLoad()}else if(CM.v=='search'){$('#cres').innerHTML=resH()}}
+ else if(b=t.closest('[data-like]')){try{const r=await jf('/posts/'+b.dataset.like+'/like',{method:'POST'}),p=findPost(b.dataset.like);if(p){p.liked=r.liked;p.likes=r.likes}draw()}catch(x){alert(x.message)}}
+ else if(b=t.closest('[data-cmtoggle]')){CM.open[b.dataset.cmtoggle]=!CM.open[b.dataset.cmtoggle];draw()}
+ else if(b=t.closest('[data-cmt]')){const id=b.dataset.cmt,i=$('#ci'+id);if(!i||!i.value.trim())return;try{const c=await jf('/posts/'+id+'/comments',{method:'POST',headers:J,body:JSON.stringify({text:i.value})}),p=findPost(id);if(p)p.comments.push(c);draw()}catch(x){alert(x.message)}}
+ else if(b=t.closest('[data-cdel]')){try{await jf('/comments/'+b.dataset.cdel,{method:'DELETE'});const p=findPost(b.dataset.pid);if(p)p.comments=p.comments.filter(c=>c.id!=b.dataset.cdel);draw()}catch(x){alert(x.message)}}
+ else if(b=t.closest('[data-pdel]')){if(confirm('¿Eliminar esta publicación?')){try{await jf('/posts/'+b.dataset.pdel,{method:'DELETE'});const id=+b.dataset.pdel;for(const L of[CM.feed,CM.prof&&CM.prof.posts,CM.me&&CM.me.posts])if(L){const i=L.findIndex(p=>p.id==id);if(i>=0)L.splice(i,1)}draw()}catch(x){alert(x.message)}}}
+ else if(b=t.closest('[data-fin]')){const[k,gi]=b.dataset.fin.split('.').map(Number);openFin(k,gi)}
+ else if(t.closest('[data-finshare]')||t.closest('[data-finonly]')){if(!FIN)return;const share=!!t.closest('[data-finshare]'),key=FIN.k+'.'+FIN.gi;let post;
+  try{if(share)post=(await jf('/posts',{method:'POST',headers:J,body:JSON.stringify({text:($('#fintx')||{}).value||'',data:FIN.sd})})).id}catch(x){return alert(x.message)}
+  S.pl.fin[key]={t:Date.now(),post};CM.feed=null;FIN=null;const m=document.querySelector('.modal');if(m)m.remove();save();draw();sync(share?'Compartido en la comunidad':'Entrenamiento finalizado')}});
+function draw(){$('#lo').hidden=!U;$('#who').textContent=`${U?'@'+U.username+' · ':''}${S.p.name||'Atleta sin nombre'} · ${S.p.sex} · Cinturón ${S.p.belt||'—'} · plan desde ${S.p.start}`;
+ $('#tabs').innerHTML=(U&&U.role=='admin'?TABS.concat([['inv','Invitaciones']]):TABS).map(([k,l])=>`<button class="${S.tab==k?'on':''}" data-t=${k}>${l}</button>`).join('');
+ $('#v').innerHTML={at:atl,res,test,plan,ret:reteste,nut,ex,com,inv:invV}[S.tab]();if(S.tab=='ex')exl()}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-t]');if(t){S.tab=t.dataset.t;save();draw();if(S.tab=='inv')invLoad();if(S.tab=='com')comLoad()}});
+document.addEventListener('change',e=>{const t=e.target,d=t.dataset;
+ if(d.ck){S.pl.done[d.ck]=t.checked?1:0}else if(d.ae){S.pl.ae[d.ae]=t.checked?1:0}
+ else if(d.p){const ks=d.p.split('.');let o=S;for(let i=0;i<ks.length-1;i++)o=o[ks[i]];const l=ks.at(-1);o[l]=t.type=='number'?(t.value===''?'':+t.value):t.value}else return;
+ if(d.p=='p.birth'){S.ini.age=S.fin.age=age(t.value)}
+ save();draw()});
+start();
+</script></body></html>
