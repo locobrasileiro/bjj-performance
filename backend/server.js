@@ -195,6 +195,16 @@ const tooMany = (key) => {
 const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
+
+// Servir archivos estáticos del frontend y multimedia
+const frontendPath = path.join(here, '../frontend/public');
+const mediaPath = path.join(here, 'media');
+
+app.use(express.static(frontendPath));
+if (fs.existsSync(mediaPath)) {
+  app.use('/media', express.static(mediaPath));
+}
+
 app.use(express.json({ limit: '2mb' }));
 app.use((req, _res, next) => {
   const t = cookie(req, 'sid');
@@ -381,6 +391,19 @@ app.delete('/api/comments/:id', needAuth, (req, res) => {
   if (c.user_id !== req.user.id && c.post_owner !== req.user.id) throw E(403, 'No permitido');
   q.delComment.run(c.id);
   res.status(204).end();
+});
+
+// Captura para SPA (Cualquier ruta que no sea de la API devuelve index.html)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/media')) {
+    return next();
+  }
+  const indexPath = path.join(frontendPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    next();
+  }
 });
 
 app.use((err, _req, res, _next) => res.status(err.status || 500).json({ error: err.status ? err.message : 'Error interno' }));
